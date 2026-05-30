@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>未来のクリエイター診断 | 適性専攻チェック</title>
+    <style>
+        :root {
+            --primary-color: #6200ea;
+            --accent-color: #00e5ff;
+            --bg-color: #f5f7fa;
+            --card-color: #ffffff;
+            --text-color: #333333;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', sans-serif; }
+        body { background: var(--bg-color); color: var(--text-color); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 15px; }
+        
+        .quiz-container { background: var(--card-color); width: 100%; max-width: 500px; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); position: relative; overflow: hidden; }
+        
+        /* 進捗バー */
+        .progress-bar { height: 6px; background: #e0e0e0; border-radius: 3px; margin-bottom: 25px; overflow: hidden; }
+        .progress-fill { height: 100%; width: 20%; background: linear-gradient(90deg, var(--primary-color), var(--accent-color)); transition: width 0.3s ease; }
+        
+        .screen { display: none; }
+        .screen.active { display: block; animation: fadeIn 0.4s ease-in-out; }
+        
+        h1 { font-size: 24px; text-align: center; margin-bottom: 15px; color: var(--primary-color); }
+        .intro-text { text-align: center; font-size: 14px; color: #666; margin-bottom: 30px; line-height: 1.6; }
+        .question-text { font-size: 18px; font-weight: bold; margin-bottom: 20px; line-height: 1.4; }
+        
+        /* ボタンデザイン */
+        .btn { display: block; width: 100%; padding: 16px; background: var(--card-color); border: 2px solid #e0e0e0; border-radius: 12px; font-size: 15px; font-weight: bold; text-align: left; cursor: pointer; margin-bottom: 12px; transition: all 0.2s ease; }
+        .btn:hover { border-color: var(--primary-color); background: #f9f6ff; }
+        .btn-start { background: var(--primary-color); color: white; text-align: center; border: none; font-size: 18px; margin-top: 20px; }
+        .btn-start:hover { background: #4a00b8; opacity: 0.9; }
+        
+        /* 結果画面 */
+        .result-title { font-size: 16px; font-weight: bold; color: #666; text-align: center; margin-bottom: 5px; }
+        .result-type { font-size: 26px; font-weight: bold; color: var(--primary-color); text-align: center; margin-bottom: 20px; }
+        .recommend-box { background: #f9f6ff; border-left: 5px solid var(--primary-color); padding: 15px; border-radius: 0 10px 10px 0; margin-bottom: 20px; }
+        .recommend-title { font-size: 14px; font-weight: bold; color: var(--primary-color); margin-bottom: 5px; }
+        .recommend-list { list-style: none; padding-left: 5px; }
+        .recommend-list li { font-size: 16px; font-weight: bold; margin: 8px 0; display: flex; align-items: center; }
+        .recommend-list li::before { content: "★"; margin-right: 8px; color: #ffca28; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <div id="screen-start" class="screen active">
+        <h1>✨ 未来のクリエイター診断 ✨</h1>
+        <p class="intro-text">5つの質問に答えるだけ！<br>画像にある6つの分野・たくさんの専攻から、あなたに一番ぴったりの学び場を見つけよう！</p>
+        <button class="btn btn-start" onclick="startQuiz()">診断をスタートする</button>
+    </div>
+
+    <div id="quiz-ready" style="display: none;">
+        <div class="progress-bar"><div id="progress" class="progress-fill"></div></div>
+        
+        <div id="q-container">
+            <p class="question-text" id="question-text">質問がここに表示されます</p>
+            <div id="choices-box"></div>
+        </div>
+    </div>
+
+    <div id="screen-result" class="screen">
+        <p class="result-title">あなたにおすすめの分野は…</p>
+        <div class="result-type" id="result-category">○○分野</div>
+        
+        <div class="recommend-box">
+            <div class="recommend-title" id="result-duration">○年制のあなたにおすすめの専攻</div>
+            <ul class="recommend-list" id="result-majors">
+                </ul>
+        </div>
+        <button class="btn btn-start" onclick="resetQuiz()">もう一度診断する</button>
+    </div>
+</div>
+
+<script>
+    // 質問データ
+    const questions = [
+        {
+            q: "Q1. 普段の生活で、一番「テンションが上がる」瞬間は？",
+            c: [
+                { text: "友達とゲームで対戦したり、配信を見たりしているとき", type: "game" },
+                { text: "パソコンやスマホの仕組み、最新のAI技術に触れたとき", type: "tech" },
+                { text: "アニメやイラスト、動画を見たり描いたりしているとき", type: "creative" },
+                { text: "機械をいじったり、何かモノを組み立てたりしているとき", type: "tech" } // ロボット要素もtechへ
+            ]
+        },
+        {
+            q: "Q2. 自分で何かを作るなら、どれに一番興味がある？",
+            c: [
+                { text: "ゲームのルールや、キャラクターを動かすプログラム", type: "game" },
+                { text: "誰もが驚くような便利なアプリや、ハッカーを防ぐセキュリティ", type: "tech" },
+                { text: "映画のような美しい3Dグラフィックや動画エフェクト", type: "creative" },
+                { text: "魅力的なキャラクターイラスト、または最先端のVTuberモデル", type: "creative" }
+            ]
+        },
+        {
+            q: "Q3. あなたの「得意なこと」や「性格」に近いものは？",
+            c: [
+                { text: "負けず嫌い！ゲームの戦術を考えたり人を盛り上げるのが好き", type: "game" },
+                { text: "ロジカルに考えるのが得意、または細かいバグを見つけるのが得意", type: "tech" },
+                { text: "自分の世界観を表現したい！絵を描くことやデザインに没頭できる", type: "creative" },
+                { text: "手先が器用、またはロボットやAIが勝手に動く仕組みにワクワクする", type: "tech" }
+            ]
+        },
+        {
+            q: "Q4. 将来、どんな場所で活躍してみたい？",
+            c: [
+                { text: "プロゲーマーの大会ステージや、esportsイベントの運営現場", type: "game" },
+                { text: "大手IT企業や、最先端のAI開発チーム、セキュリティの最前線", type: "tech" },
+                { text: "ゲーム会社、アニメ制作スタジオ、または映像制作クリエイターとして", type: "creative" },
+                { text: "ロボットメーカーや、AIと機械を組み合わせた開発現場", type: "tech" }
+            ]
+        },
+        {
+            q: "Q5. 専門学校で学ぶなら、期間はどっちがいい？",
+            c: [
+                { text: "【4年制】じっくり学んで「高度専門士」を目指しトッププロへ！", type: "4year" },
+                { text: "【3年制】集中して「専門士」を取得し、早く即戦力デビュー！", type: "3year" }
+            ]
+        }
+    ];
+
+    // 専攻データマッピング
+    const majorData = {
+        game: {
+            name: "ゲーム・esports分野",
+            "4year": ["スーパーゲームクリエイター専攻", "esportsプロマネージメント専攻", "esportsストリーマー＆ゲーム実況専攻"],
+            "3year": ["esportsプロゲーマー専攻", "ゲームプログラマー専攻", "ゲームCGデザイン専攻", "ゲームキャラクターデザイン専攻"]
+        },
+        tech: {
+            name: "IT・AI・ロボット分野",
+            "4year": ["スーパーITエンジニア専攻", "スーパーAIクリエイター専攻", "スーパーホワイトハッカー専攻", "ロボット・AIエンジニア専攻"],
+            "3year": ["ITプログラマー専攻", "UI・UXデザイナー専攻"]
+        },
+        creative: {
+            name: "CG・映像・イラスト・アニメ分野",
+            "4year": ["スーパーCGクリエイター専攻", "スーパーデジタルメディア専攻", "スーパーコミックイラスト専攻", "スーパーVTuber専攻"],
+            "3year": ["CGクリエイター専攻", "ネット動画クリエイター専攻", "コミックイラスト専攻", "アニメーション専攻"]
+        }
+    };
+
+    let currentQ = 0;
+    let scores = { game: 0, tech: 0, creative: 0 };
+    let duration = "4year"; // デフォルト
+
+    function startQuiz() {
+        document.getElementById('screen-start').style.display = 'none';
+        document.getElementById('quiz-ready').style.display = 'block';
+        showQuestion();
+    }
+
+    function showQuestion() {
+        // プロ進捗バー更新
+        const progressPercent = ((currentQ + 1) / questions.length) * 100;
+        document.getElementById('progress').style.width = progressPercent + '%';
+
+        const qData = questions[currentQ];
+        document.getElementById('question-text').innerText = qData.q;
+        
+        const choicesBox = document.getElementById('choices-box');
+        choicesBox.innerHTML = '';
+
+        qData.c.forEach(choice => {
+            const button = document.createElement('button');
+            button.className = 'btn';
+            button.innerText = choice.text;
+            button.onclick = () => selectAnswer(choice.type);
+            choicesBox.appendChild(button);
+        });
+    }
+
+    function selectAnswer(type) {
+        if (type === "4year" || type === "3year") {
+            duration = type;
+        } else {
+            scores[type]++;
+        }
+
+        currentQ++;
+
+        if (currentQ < questions.length) {
+            showQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        document.getElementById('quiz-ready').style.display = 'none';
+        document.getElementById('screen-result').classList.add('active');
+
+        // 一番得点が高いカテゴリを判定
+        let maxType = 'game';
+        if (scores.tech > scores.game && scores.tech >= scores.creative) maxType = 'tech';
+        if (scores.creative > scores.game && scores.creative > scores.tech) maxType = 'creative';
+
+        const resultObj = majorData[maxType];
+        const selectedDurationText = duration === "4year" ? "4年制（高度専門士）" : "3年制（専門士）";
+
+        // 画面書き換え
+        document.getElementById('result-category').innerText = resultObj.name;
+        document.getElementById('result-duration').innerText = `📌 ${selectedDurationText}でおすすめの専攻`;
+
+        const majorsList = document.getElementById('result-majors');
+        majorsList.innerHTML = '';
+        
+        resultObj[duration].forEach(major => {
+            const li = document.createElement('li');
+            li.innerText = major;
+            majorsList.appendChild(li);
+        });
+    }
+
+    function resetQuiz() {
+        currentQ = 0;
+        scores = { game: 0, tech: 0, creative: 0 };
+        duration = "4year";
+        document.getElementById('screen-result').classList.remove('active');
+        document.getElementById('screen-start').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
