@@ -40,9 +40,31 @@
         .result-type { font-size: 26px; font-weight: bold; color: var(--primary-color); text-align: center; margin-bottom: 20px; }
         .recommend-box { background: #f9f6ff; border-left: 5px solid var(--primary-color); padding: 15px; border-radius: 0 10px 10px 0; margin-bottom: 20px; }
         .recommend-title { font-size: 14px; font-weight: bold; color: var(--primary-color); margin-bottom: 5px; }
-        .recommend-list { list-style: none; padding-left: 5px; }
-        .recommend-list li { font-size: 16px; font-weight: bold; margin: 8px 0; display: flex; align-items: center; }
-        .recommend-list li::before { content: "★"; margin-right: 8px; color: #ffca28; }
+        .recommend-list { list-style: none; padding-left: 0; display: grid; gap: 12px; }
+        .recommend-list li { list-style: none; }
+        .course-card {
+            background: #ffffff;
+            border: 1px solid #e8e1f7;
+            border-radius: 14px;
+            padding: 14px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 12px;
+            align-items: center;
+            box-shadow: 0 8px 18px rgba(98, 0, 234, 0.06);
+        }
+        .course-name { font-size: 16px; font-weight: bold; color: var(--text-color); margin-bottom: 6px; line-height: 1.4; }
+        .course-meta { font-size: 13px; color: #666; margin-bottom: 8px; }
+        .course-link { font-size: 13px; color: var(--primary-color); word-break: break-all; text-decoration: none; }
+        .course-link:hover { text-decoration: underline; }
+        .course-qr { width: 96px; height: 96px; border-radius: 10px; background: #fff; border: 1px solid #ece7f7; }
+        .course-visual { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        .course-qr-label { font-size: 11px; color: #777; }
+
+        @media (max-width: 480px) {
+            .course-card { grid-template-columns: 1fr; }
+            .course-visual { align-items: flex-start; }
+        }
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -130,18 +152,39 @@
     const majorData = {
         game: {
             name: "ゲーム・esports分野",
-            "4year": ["スーパーゲームクリエイター専攻", "esportsプロマネージメント専攻", "esportsストリーマー＆ゲーム実況専攻"],
-            "3year": ["esportsプロゲーマー専攻", "ゲームプログラマー専攻", "ゲームCGデザイン専攻", "ゲームキャラクターデザイン専攻"]
+            courses: [
+                { name: "スーパーゲームクリエイター専攻", years: "4年制", url: "https://www.tech.ac.jp/course/supergamecreator/" },
+                { name: "esportsプロマネージメント専攻", years: "4年制", url: "https://www.tech.ac.jp/course/esportspromanager/" },
+                { name: "esportsストリーマー＆ゲーム実況専攻", years: "4年制", url: "https://www.tech.ac.jp/course/esportsstreamer/" },
+                { name: "esportsプロゲーマー専攻", years: "3年制", url: "https://www.tech.ac.jp/course/esportsprogamer/" },
+                { name: "ゲームプログラマー専攻", years: "3年制", url: "https://www.tech.ac.jp/course/gameprogrammer/" },
+                { name: "ゲームCGデザイン専攻", years: "3年制", url: "https://www.tech.ac.jp/course/gamecgdesign/" },
+                { name: "ゲームキャラクターデザイン専攻", years: "3年制", url: "https://www.tech.ac.jp/course/gamecharacterdesign/" }
+            ]
         },
         tech: {
             name: "IT・AI・ロボット分野",
-            "4year": ["スーパーITエンジニア専攻", "スーパーAIクリエイター専攻", "スーパーホワイトハッカー専攻", "ロボット・AIエンジニア専攻"],
-            "3year": ["ITプログラマー専攻", "UI・UXデザイナー専攻"]
+            courses: [
+                { name: "スーパーITエンジニア専攻", years: "4年制", url: "https://www.tech.ac.jp/course/superitengineer/" },
+                { name: "スーパーAIクリエイター専攻", years: "4年制", url: "https://www.tech.ac.jp/course/superaicreator/" },
+                { name: "スーパーホワイトハッカー専攻", years: "4年制", url: "https://www.tech.ac.jp/course/superwhitehacker/" },
+                { name: "ロボット・AIエンジニア専攻", years: "4年制", url: "https://www.tech.ac.jp/course/robotaiengineer/" },
+                { name: "UI・UXデザイナー専攻", years: "3年制", url: "https://www.tech.ac.jp/course/uiuxdesigner/" },
+                { name: "ITプログラマー専攻", years: "3年制", url: "https://www.tech.ac.jp/course/itprogrammer/" }
+            ]
         },
         creative: {
             name: "CG・映像・イラスト・アニメ分野",
-            "4year": ["スーパーCGクリエイター専攻", "スーパーデジタルメディア専攻", "スーパーコミックイラスト専攻", "スーパーVTuber専攻"],
-            "3year": ["CGクリエイター専攻", "ネット動画クリエイター専攻", "コミックイラスト専攻", "アニメーション専攻"]
+            courses: [
+                { name: "スーパーCGクリエイター専攻", years: "4年制", url: "https://www.tech.ac.jp/course/supercgcreator/" },
+                { name: "スーパーデジタルメディア専攻", years: "4年制", url: "https://www.tech.ac.jp/course/superdigitalmedia/" },
+                { name: "スーパーコミックイラスト専攻", years: "4年制", url: "https://www.tech.ac.jp/course/supercomicillustration/" },
+                { name: "スーパーVTuber専攻", years: "4年制", url: "https://www.tech.ac.jp/course/supervtuber/" },
+                { name: "CGクリエイター専攻", years: "3年制", url: "https://www.tech.ac.jp/course/cgcreator/" },
+                { name: "ネット動画クリエイター専攻", years: "3年制", url: "https://www.tech.ac.jp/course/netmoviecreator/" },
+                { name: "コミックイラスト専攻", years: "3年制", url: "https://www.tech.ac.jp/course/comicillustration/" },
+                { name: "アニメーション専攻", years: "3年制", url: "https://www.tech.ac.jp/course/animation/" }
+            ]
         }
     };
 
@@ -202,6 +245,7 @@
 
         const resultObj = majorData[maxType];
         const selectedDurationText = duration === "4year" ? "4年制（高度専門士）" : "3年制（専門士）";
+        const durationLabel = duration === "4year" ? "4年制" : "3年制";
 
         // 画面書き換え
         document.getElementById('result-category').innerText = resultObj.name;
@@ -210,9 +254,21 @@
         const majorsList = document.getElementById('result-majors');
         majorsList.innerHTML = '';
         
-        resultObj[duration].forEach(major => {
+        resultObj.courses.filter(course => course.years === durationLabel).forEach(course => {
             const li = document.createElement('li');
-            li.innerText = major;
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(course.url)}`;
+            li.innerHTML = `
+                <div class="course-card">
+                    <div>
+                        <div class="course-name">${course.name}</div>
+                        <div class="course-meta">${course.years}</div>
+                        <a class="course-link" href="${course.url}" target="_blank" rel="noopener noreferrer">${course.url}</a>
+                    </div>
+                    <div class="course-visual">
+                        <img class="course-qr" src="${qrUrl}" alt="${course.name} のQRコード">
+                        <div class="course-qr-label">QRコード</div>
+                    </div>
+                </div>`;
             majorsList.appendChild(li);
         });
     }
@@ -225,6 +281,5 @@
         document.getElementById('screen-start').style.display = 'block';
     }
 </script>
-
 </body>
 </html>
