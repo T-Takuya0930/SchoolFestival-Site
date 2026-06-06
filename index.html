@@ -4,70 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>未来のクリエイター診断 | 適性専攻チェック</title>
-    <style>
-        :root {
-            --primary-color: #6200ea;
-            --accent-color: #00e5ff;
-            --bg-color: #f5f7fa;
-            --card-color: #ffffff;
-            --text-color: #333333;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', sans-serif; }
-        body { background: var(--bg-color); color: var(--text-color); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 15px; }
-        
-        .quiz-container { background: var(--card-color); width: 100%; max-width: 500px; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); position: relative; overflow: hidden; }
-        
-        /* 進捗バー */
-        .progress-bar { height: 6px; background: #e0e0e0; border-radius: 3px; margin-bottom: 25px; overflow: hidden; }
-        .progress-fill { height: 100%; width: 20%; background: linear-gradient(90deg, var(--primary-color), var(--accent-color)); transition: width 0.3s ease; }
-        
-        .screen { display: none; }
-        .screen.active { display: block; animation: fadeIn 0.4s ease-in-out; }
-        
-        h1 { font-size: 24px; text-align: center; margin-bottom: 15px; color: var(--primary-color); }
-        .intro-text { text-align: center; font-size: 14px; color: #666; margin-bottom: 30px; line-height: 1.6; }
-        .question-text { font-size: 18px; font-weight: bold; margin-bottom: 20px; line-height: 1.4; }
-        
-        /* ボタンデザイン */
-        .btn { display: block; width: 100%; padding: 16px; background: var(--card-color); border: 2px solid #e0e0e0; border-radius: 12px; font-size: 15px; font-weight: bold; text-align: left; cursor: pointer; margin-bottom: 12px; transition: all 0.2s ease; }
-        .btn:hover { border-color: var(--primary-color); background: #f9f6ff; }
-        .btn-start { background: var(--primary-color); color: white; text-align: center; border: none; font-size: 18px; margin-top: 20px; }
-        .btn-start:hover { background: #4a00b8; opacity: 0.9; }
-        
-        /* 結果画面 */
-        .result-title { font-size: 16px; font-weight: bold; color: #666; text-align: center; margin-bottom: 5px; }
-        .result-type { font-size: 26px; font-weight: bold; color: var(--primary-color); text-align: center; margin-bottom: 20px; }
-        .recommend-box { background: #f9f6ff; border-left: 5px solid var(--primary-color); padding: 15px; border-radius: 0 10px 10px 0; margin-bottom: 20px; }
-        .recommend-title { font-size: 14px; font-weight: bold; color: var(--primary-color); margin-bottom: 5px; }
-        .recommend-list { list-style: none; padding-left: 0; display: grid; gap: 12px; }
-        .recommend-list li { list-style: none; }
-        .course-card {
-            background: #ffffff;
-            border: 1px solid #e8e1f7;
-            border-radius: 14px;
-            padding: 14px;
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 12px;
-            align-items: center;
-            box-shadow: 0 8px 18px rgba(98, 0, 234, 0.06);
-        }
-        .course-name { font-size: 16px; font-weight: bold; color: var(--text-color); margin-bottom: 6px; line-height: 1.4; }
-        .course-meta { font-size: 13px; color: #666; margin-bottom: 8px; }
-        .course-link { font-size: 13px; color: var(--primary-color); word-break: break-all; text-decoration: none; }
-        .course-link:hover { text-decoration: underline; }
-        .course-qr { width: 96px; height: 96px; border-radius: 10px; background: #fff; border: 1px solid #ece7f7; }
-        .course-visual { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-        .course-qr-label { font-size: 11px; color: #777; }
-
-        @media (max-width: 480px) {
-            .course-card { grid-template-columns: 1fr; }
-            .course-visual { align-items: flex-start; }
-        }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
